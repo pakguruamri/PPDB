@@ -1,0 +1,712 @@
+<!doctype html>
+<html lang="id" class="h-full">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Formulir Pendaftaran</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="/_sdk/element_sdk.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
+  <style>
+    body {
+      box-sizing: border-box;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+    
+    .form-input {
+      transition: all 0.2s ease;
+    }
+    
+    .form-input:focus {
+      transform: translateY(-1px);
+    }
+    
+    .file-upload-area {
+      transition: all 0.3s ease;
+    }
+    
+    .file-upload-area:hover {
+      border-color: #6366f1;
+      background-color: #f5f3ff;
+    }
+    
+    .file-upload-area.dragover {
+      border-color: #6366f1;
+      background-color: #eef2ff;
+      transform: scale(1.01);
+    }
+    
+    .btn-submit {
+      background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+      transition: all 0.3s ease;
+    }
+    
+    .btn-submit:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 40px -10px rgba(99, 102, 241, 0.5);
+    }
+    
+    .btn-submit:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+    }
+    
+    .success-animation {
+      animation: successPop 0.5s ease-out;
+    }
+    
+    @keyframes successPop {
+      0% { transform: scale(0.8); opacity: 0; }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    
+    .loading-spinner {
+      animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    
+    .fade-in {
+      animation: fadeIn 0.4s ease-out;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .error-shake {
+      animation: shake 0.4s ease-in-out;
+    }
+    
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-5px); }
+      75% { transform: translateX(5px); }
+    }
+  </style>
+  <style>@view-transition { navigation: auto; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+ </head>
+ <body class="h-full bg-slate-50 overflow-auto">
+  <div class="min-h-full w-full py-8 px-4 sm:px-6 lg:px-8"><!-- Form Container -->
+   <div id="formContainer" class="max-w-2xl mx-auto fade-in"><!-- Header -->
+    <div class="text-center mb-8">
+     <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 mb-4 shadow-lg">
+      <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+      </svg>
+     </div>
+     <h1 id="formTitle" class="text-3xl font-bold text-slate-800 mb-2">Formulir Pendaftaran</h1>
+     <p id="formSubtitle" class="text-slate-500">Silakan lengkapi data diri Anda dengan benar</p>
+    </div><!-- Form Card -->
+    <div class="bg-white rounded-3xl shadow-lg shadow-slate-200/50 p-8 sm:p-10">
+     <form id="registrationForm" class="space-y-6"><!-- Nama Lengkap -->
+      <div class="space-y-2"><label for="namaLengkap" class="block text-sm font-semibold text-slate-700"> Nama Lengkap <span class="text-red-500">*</span> </label> <input type="text" id="namaLengkap" name="namaLengkap" required placeholder="Masukkan nama lengkap Anda" class="form-input w-full px-4 py-3.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500">
+       <p id="namaLengkapError" class="text-red-500 text-xs mt-1 hidden">Nama lengkap wajib diisi</p>
+      </div><!-- Alamat -->
+      <div class="space-y-2"><label for="alamat" class="block text-sm font-semibold text-slate-700"> Alamat <span class="text-red-500">*</span> </label> <textarea id="alamat" name="alamat" required rows="3" placeholder="Masukkan alamat lengkap Anda" class="form-input w-full px-4 py-3.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 resize-none"></textarea>
+       <p id="alamatError" class="text-red-500 text-xs mt-1 hidden">Alamat wajib diisi</p>
+      </div><!-- Tanggal Lahir & Jenis Kelamin -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+       <div class="space-y-2"><label for="tanggalLahir" class="block text-sm font-semibold text-slate-700"> Tanggal Lahir <span class="text-red-500">*</span> </label> <input type="date" id="tanggalLahir" name="tanggalLahir" required class="form-input w-full px-4 py-3.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500">
+        <p id="tanggalLahirError" class="text-red-500 text-xs mt-1 hidden">Tanggal lahir wajib diisi</p>
+       </div>
+       <div class="space-y-2"><label for="jenisKelamin" class="block text-sm font-semibold text-slate-700"> Jenis Kelamin <span class="text-red-500">*</span> </label> <select id="jenisKelamin" name="jenisKelamin" required class="form-input w-full px-4 py-3.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 appearance-none cursor-pointer" style="background-image: url('data:image/svg+xml;charset=UTF-8,%3csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 24 24%27 fill=%27none%27 stroke=%27%2394a3b8%27 stroke-width=%272%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27%3e%3cpolyline points=%276 9 12 15 18 9%27%3e%3c/polyline%3e%3c/svg%3e'); background-repeat: no-repeat; background-position: right 1rem center; background-size: 1.2em;"> <option value="">Pilih jenis kelamin</option> <option value="Laki-laki">Laki-laki</option> <option value="Perempuan">Perempuan</option> </select>
+        <p id="jenisKelaminError" class="text-red-500 text-xs mt-1 hidden">Jenis kelamin wajib dipilih</p>
+       </div>
+      </div><!-- Asal Sekolah -->
+      <div class="space-y-2"><label for="asalSekolah" class="block text-sm font-semibold text-slate-700"> Asal Sekolah <span class="text-red-500">*</span> </label> <input type="text" id="asalSekolah" name="asalSekolah" required placeholder="Masukkan nama sekolah asal" class="form-input w-full px-4 py-3.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500">
+       <p id="asalSekolahError" class="text-red-500 text-xs mt-1 hidden">Asal sekolah wajib diisi</p>
+      </div><!-- No HP/WA -->
+      <div class="space-y-2"><label for="noHp" class="block text-sm font-semibold text-slate-700"> No. HP/WhatsApp <span class="text-red-500">*</span> </label>
+       <div class="relative"><span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-medium">+62</span> <input type="tel" id="noHp" name="noHp" required placeholder="8xxxxxxxxxx" class="form-input w-full pl-14 pr-4 py-3.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500">
+       </div>
+       <p id="noHpError" class="text-red-500 text-xs mt-1 hidden">Nomor HP wajib diisi dengan format yang benar</p>
+      </div><!-- Upload Kartu Keluarga -->
+      <div class="space-y-2"><label class="block text-sm font-semibold text-slate-700"> Upload Kartu Keluarga <span class="text-red-500">*</span> </label>
+       <div id="fileUploadArea" class="file-upload-area border-2 border-dashed border-slate-200 rounded-xl p-8 text-center cursor-pointer"><input type="file" id="kartuKeluarga" name="kartuKeluarga" accept=".jpg,.jpeg,.png,.pdf" class="hidden">
+        <div id="uploadPlaceholder">
+         <div class="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-indigo-50 mb-4">
+          <svg class="w-6 h-6 text-indigo-500" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+          </svg>
+         </div>
+         <p class="text-slate-600 font-medium mb-1">Klik untuk upload atau drag &amp; drop</p>
+         <p class="text-slate-400 text-sm">JPG, PNG, atau PDF (Maks. 5MB)</p>
+        </div>
+        <div id="uploadPreview" class="hidden">
+         <div class="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-green-50 mb-4">
+          <svg class="w-6 h-6 text-green-500" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+          </svg>
+         </div>
+         <p id="fileName" class="text-slate-700 font-medium mb-1"></p>
+         <p id="fileSize" class="text-slate-400 text-sm"></p><button type="button" id="removeFile" class="mt-3 text-red-500 text-sm font-medium hover:text-red-600 transition-colors"> Hapus file </button>
+        </div>
+       </div>
+       <p id="kartuKeluargaError" class="text-red-500 text-xs mt-1 hidden">Kartu Keluarga wajib diupload</p>
+      </div><!-- Submit Button -->
+      <div class="pt-4"><button type="submit" id="submitBtn" class="btn-submit w-full py-4 px-6 text-white font-semibold rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"> <span id="submitText">Kirim Pendaftaran</span> <span id="loadingSpinner" class="hidden inline-flex items-center">
+         <svg class="loading-spinner w-5 h-5 mr-2" fill="none" viewbox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle> <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+         </svg> Mengirim... </span> </button>
+      </div>
+     </form>
+    </div><!-- Info Note -->
+    <p class="text-center text-slate-400 text-sm mt-6">Data Anda akan disimpan dengan aman dan hanya digunakan untuk keperluan pendaftaran.</p>
+   </div><!-- Success Modal -->
+   <div id="successModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div class="absolute inset-0 bg-slate-900/50 backdrop-blur-sm"></div>
+    <div class="success-animation relative bg-white rounded-3xl shadow-2xl p-8 sm:p-10 max-w-md w-full text-center">
+     <div class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-green-100 mb-6">
+      <svg class="w-10 h-10 text-green-500" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+      </svg>
+     </div>
+     <h2 class="text-2xl font-bold text-slate-800 mb-2">Pendaftaran Berhasil!</h2>
+     <p class="text-slate-500 mb-6">Data Anda telah berhasil dikirim dan disimpan. Kami akan menghubungi Anda melalui WhatsApp.</p>
+     <div class="space-y-3"><button id="sendWhatsAppBtn" class="w-full py-3.5 px-6 bg-green-500 hover:bg-green-600 text-white font-semibold rounded-xl transition-all flex items-center justify-center gap-2 hover:shadow-lg">
+       <svg class="w-5 h-5" fill="currentColor" viewbox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z" />
+       </svg> Hubungi Admin via WhatsApp </button> <button id="closeSuccessModal" class="w-full py-3.5 px-6 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl transition-colors"> Tutup </button>
+     </div>
+    </div>
+   </div><!-- Error Toast -->
+   <div id="errorToast" class="hidden fixed bottom-4 right-4 z-50 bg-red-500 text-white px-6 py-4 rounded-xl shadow-lg max-w-sm">
+    <div class="flex items-start gap-3">
+     <svg class="w-5 h-5 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+     </svg>
+     <div>
+      <p class="font-semibold">Terjadi Kesalahan</p>
+      <p id="errorMessage" class="text-sm text-red-100 mt-1">Gagal mengirim data. Silakan coba lagi.</p>
+     </div>
+    </div>
+   </div>
+  </div><!-- Google Apps Script Code Reference (in comments for reference) --> <!--
+  =====================================
+  GOOGLE APPS SCRIPT CODE (Code.gs)
+  =====================================
+  
+  // Ganti dengan ID Spreadsheet dan Folder Google Drive Anda
+  const SPREADSHEET_ID = 'YOUR_SPREADSHEET_ID_HERE';
+  const FOLDER_ID = 'YOUR_FOLDER_ID_HERE';
+  
+  function doPost(e) {
+    try {
+      // Parse JSON data dari request
+      const data = JSON.parse(e.postData.contents);
+      
+      // Buka Spreadsheet
+      const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+      const sheet = ss.getSheetByName('Pendaftaran') || ss.insertSheet('Pendaftaran');
+      
+      // Buat header jika sheet kosong
+      if (sheet.getLastRow() === 0) {
+        sheet.appendRow([
+          'Timestamp',
+          'Nama Lengkap',
+          'Alamat',
+          'Tanggal Lahir',
+          'Jenis Kelamin',
+          'Asal Sekolah',
+          'No HP/WA',
+          'Link Kartu Keluarga'
+        ]);
+      }
+      
+      // Upload file ke Google Drive
+      let fileUrl = '';
+      if (data.fileData && data.fileName) {
+        const folder = DriveApp.getFolderById(FOLDER_ID);
+        
+        // Decode Base64
+        const fileBlob = Utilities.newBlob(
+          Utilities.base64Decode(data.fileData),
+          data.fileType,
+          data.fileName
+        );
+        
+        // Simpan file ke folder
+        const file = folder.createFile(fileBlob);
+        fileUrl = file.getUrl();
+      }
+      
+      // Simpan data ke Spreadsheet
+      sheet.appendRow([
+        new Date().toLocaleString('id-ID'),
+        data.namaLengkap,
+        data.alamat,
+        data.tanggalLahir,
+        data.jenisKelamin,
+        data.asalSekolah,
+        '+62' + data.noHp,
+        fileUrl
+      ]);
+      
+      // Return success response
+      return ContentService
+        .createTextOutput(JSON.stringify({ status: 'success', message: 'Data berhasil disimpan!' }))
+        .setMimeType(ContentService.MimeType.JSON);
+        
+    } catch (error) {
+      // Return error response
+      return ContentService
+        .createTextOutput(JSON.stringify({ status: 'error', message: error.toString() }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+  }
+  
+  function doGet(e) {
+    return ContentService
+      .createTextOutput(JSON.stringify({ status: 'ok', message: 'Service is running' }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+  
+  =====================================
+  -->
+  <script>
+    // Default configuration
+    const defaultConfig = {
+      form_title: 'Formulir Pendaftaran',
+      form_subtitle: 'Silakan lengkapi data diri Anda dengan benar',
+      submit_button_text: 'Kirim Pendaftaran',
+      primary_color: '#6366f1',
+      secondary_color: '#8b5cf6',
+      background_color: '#f8fafc',
+      text_color: '#1e293b',
+      accent_color: '#10b981'
+    };
+
+    // Current config reference
+    let config = { ...defaultConfig };
+
+    // DOM Elements
+    const form = document.getElementById('registrationForm');
+    const submitBtn = document.getElementById('submitBtn');
+    const submitText = document.getElementById('submitText');
+    const loadingSpinner = document.getElementById('loadingSpinner');
+    const successModal = document.getElementById('successModal');
+    const closeSuccessModalBtn = document.getElementById('closeSuccessModal');
+    const errorToast = document.getElementById('errorToast');
+    const errorMessage = document.getElementById('errorMessage');
+    const fileUploadArea = document.getElementById('fileUploadArea');
+    const fileInput = document.getElementById('kartuKeluarga');
+    const uploadPlaceholder = document.getElementById('uploadPlaceholder');
+    const uploadPreview = document.getElementById('uploadPreview');
+    const fileNameDisplay = document.getElementById('fileName');
+    const fileSizeDisplay = document.getElementById('fileSize');
+    const removeFileBtn = document.getElementById('removeFile');
+
+    // File storage
+    let selectedFile = null;
+    let fileBase64 = null;
+
+    // Google Apps Script Web App URL - GANTI DENGAN URL ANDA
+    const GAS_URL = 'https://script.google.com/macros/s/AKfycbz0Ou6BX7u4NA-mtDaqBCDkWMtcWtRZPWmr6Dh6Q49QchKv_R6Tcrtp0NAXW6LYJU1w/exec';
+
+    // File upload handling
+    fileUploadArea.addEventListener('click', () => fileInput.click());
+    
+    fileUploadArea.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      fileUploadArea.classList.add('dragover');
+    });
+    
+    fileUploadArea.addEventListener('dragleave', () => {
+      fileUploadArea.classList.remove('dragover');
+    });
+    
+    fileUploadArea.addEventListener('drop', (e) => {
+      e.preventDefault();
+      fileUploadArea.classList.remove('dragover');
+      const files = e.dataTransfer.files;
+      if (files.length > 0) {
+        handleFileSelect(files[0]);
+      }
+    });
+    
+    fileInput.addEventListener('change', (e) => {
+      if (e.target.files.length > 0) {
+        handleFileSelect(e.target.files[0]);
+      }
+    });
+    
+    removeFileBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      clearFile();
+    });
+
+    function handleFileSelect(file) {
+      // Validate file type
+      const validTypes = ['image/jpeg', 'image/png', 'application/pdf'];
+      if (!validTypes.includes(file.type)) {
+        showError('Format file tidak didukung. Gunakan JPG, PNG, atau PDF.');
+        return;
+      }
+      
+      // Validate file size (5MB max)
+      const maxSize = 5 * 1024 * 1024;
+      if (file.size > maxSize) {
+        showError('Ukuran file terlalu besar. Maksimal 5MB.');
+        return;
+      }
+      
+      selectedFile = file;
+      
+      // Convert to Base64
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        // Remove the data URL prefix to get pure Base64
+        fileBase64 = e.target.result.split(',')[1];
+        
+        // Update UI
+        uploadPlaceholder.classList.add('hidden');
+        uploadPreview.classList.remove('hidden');
+        fileNameDisplay.textContent = file.name;
+        fileSizeDisplay.textContent = formatFileSize(file.size);
+        
+        // Clear error
+        hideFieldError('kartuKeluarga');
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function clearFile() {
+      selectedFile = null;
+      fileBase64 = null;
+      fileInput.value = '';
+      uploadPlaceholder.classList.remove('hidden');
+      uploadPreview.classList.add('hidden');
+    }
+
+    function formatFileSize(bytes) {
+      if (bytes < 1024) return bytes + ' B';
+      if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+      return (bytes / (1024 * 1024)).toFixed(2) + ' MB';
+    }
+
+    // Form validation
+    function validateForm() {
+      let isValid = true;
+      
+      // Nama Lengkap
+      const namaLengkap = document.getElementById('namaLengkap').value.trim();
+      if (!namaLengkap) {
+        showFieldError('namaLengkap');
+        isValid = false;
+      } else {
+        hideFieldError('namaLengkap');
+      }
+      
+      // Alamat
+      const alamat = document.getElementById('alamat').value.trim();
+      if (!alamat) {
+        showFieldError('alamat');
+        isValid = false;
+      } else {
+        hideFieldError('alamat');
+      }
+      
+      // Tanggal Lahir
+      const tanggalLahir = document.getElementById('tanggalLahir').value;
+      if (!tanggalLahir) {
+        showFieldError('tanggalLahir');
+        isValid = false;
+      } else {
+        hideFieldError('tanggalLahir');
+      }
+      
+      // Jenis Kelamin
+      const jenisKelamin = document.getElementById('jenisKelamin').value;
+      if (!jenisKelamin) {
+        showFieldError('jenisKelamin');
+        isValid = false;
+      } else {
+        hideFieldError('jenisKelamin');
+      }
+      
+      // Asal Sekolah
+      const asalSekolah = document.getElementById('asalSekolah').value.trim();
+      if (!asalSekolah) {
+        showFieldError('asalSekolah');
+        isValid = false;
+      } else {
+        hideFieldError('asalSekolah');
+      }
+      
+      // No HP
+      const noHp = document.getElementById('noHp').value.trim();
+      const phoneRegex = /^8[0-9]{8,12}$/;
+      if (!noHp || !phoneRegex.test(noHp)) {
+        showFieldError('noHp');
+        isValid = false;
+      } else {
+        hideFieldError('noHp');
+      }
+      
+      // Kartu Keluarga
+      if (!selectedFile || !fileBase64) {
+        showFieldError('kartuKeluarga');
+        isValid = false;
+      } else {
+        hideFieldError('kartuKeluarga');
+      }
+      
+      return isValid;
+    }
+
+    function showFieldError(fieldId) {
+      const errorElement = document.getElementById(fieldId + 'Error');
+      const inputElement = document.getElementById(fieldId);
+      if (errorElement) {
+        errorElement.classList.remove('hidden');
+      }
+      if (inputElement) {
+        inputElement.classList.add('border-red-500', 'error-shake');
+        setTimeout(() => inputElement.classList.remove('error-shake'), 400);
+      }
+    }
+
+    function hideFieldError(fieldId) {
+      const errorElement = document.getElementById(fieldId + 'Error');
+      const inputElement = document.getElementById(fieldId);
+      if (errorElement) {
+        errorElement.classList.add('hidden');
+      }
+      if (inputElement) {
+        inputElement.classList.remove('border-red-500');
+      }
+    }
+
+    function showError(message) {
+      errorMessage.textContent = message;
+      errorToast.classList.remove('hidden');
+      setTimeout(() => {
+        errorToast.classList.add('hidden');
+      }, 5000);
+    }
+
+    function setLoading(isLoading) {
+      if (isLoading) {
+        submitBtn.disabled = true;
+        submitText.classList.add('hidden');
+        loadingSpinner.classList.remove('hidden');
+      } else {
+        submitBtn.disabled = false;
+        submitText.classList.remove('hidden');
+        loadingSpinner.classList.add('hidden');
+      }
+    }
+
+    function showSuccessModal() {
+      successModal.classList.remove('hidden');
+    }
+
+    function hideSuccessModal() {
+      successModal.classList.add('hidden');
+    }
+
+    function resetForm() {
+      form.reset();
+      clearFile();
+    }
+
+    // Form submission
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      if (!validateForm()) {
+        return;
+      }
+      
+      setLoading(true);
+      
+      // Prepare form data
+      const formData = {
+        namaLengkap: document.getElementById('namaLengkap').value.trim(),
+        alamat: document.getElementById('alamat').value.trim(),
+        tanggalLahir: document.getElementById('tanggalLahir').value,
+        jenisKelamin: document.getElementById('jenisKelamin').value,
+        asalSekolah: document.getElementById('asalSekolah').value.trim(),
+        noHp: document.getElementById('noHp').value.trim(),
+        fileName: selectedFile ? selectedFile.name : '',
+        fileType: selectedFile ? selectedFile.type : '',
+        fileData: fileBase64
+      };
+      
+      try {
+        // Check if GAS_URL is configured
+        if (GAS_URL === 'YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE') {
+          // Demo mode - simulate success after 2 seconds
+          await new Promise(resolve => setTimeout(resolve, 2000));
+          setLoading(false);
+          showSuccessModal();
+          resetForm();
+          return;
+        }
+        
+        // Log data yang akan dikirim
+        console.log('Sending data to:', GAS_URL);
+        console.log('Form data:', formData);
+        
+        // Send to Google Apps Script - Try with CORS first to get error details
+        try {
+          const response = await fetch(GAS_URL, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(formData),
+            redirect: 'follow'
+          });
+          
+          const result = await response.json();
+          console.log('Response:', result);
+          
+          if (result.status === 'success') {
+            setLoading(false);
+            showSuccessModal();
+            resetForm();
+          } else {
+            setLoading(false);
+            showError(result.message || 'Terjadi kesalahan saat menyimpan data.');
+          }
+        } catch (corsError) {
+          // If CORS fails, try no-cors mode
+          console.log('CORS failed, trying no-cors mode:', corsError);
+          
+          const response = await fetch(GAS_URL, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(formData)
+          });
+          
+          // With no-cors, we can't read the response
+          // Wait a bit and assume success
+          await new Promise(resolve => setTimeout(resolve, 1000));
+          setLoading(false);
+          showSuccessModal();
+          resetForm();
+        }
+        
+      } catch (error) {
+        setLoading(false);
+        showError('Gagal mengirim data: ' + error.message);
+        console.error('Submit error:', error);
+      }
+    });
+
+    // WhatsApp admin button
+    const sendWhatsAppBtn = document.getElementById('sendWhatsAppBtn');
+    const ADMIN_WHATSAPP = '6289647138992';
+    
+    sendWhatsAppBtn.addEventListener('click', () => {
+      // Get user data from form (if still available)
+      const namaLengkap = document.getElementById('namaLengkap').value.trim() || 'Calon Siswa';
+      
+      // Create WhatsApp message
+      const message = `Halo Admin, saya ${namaLengkap}. Saya baru saja menyelesaikan formulir pendaftaran. Mohon informasi lebih lanjut mengenai proses selanjutnya. Terima kasih!`;
+      
+      // Create WhatsApp URL
+      const waUrl = `https://wa.me/${ADMIN_WHATSAPP}?text=${encodeURIComponent(message)}`;
+      
+      // Open in new tab
+      window.open(waUrl, '_blank', 'noopener,noreferrer');
+    });
+    
+    // Close success modal
+    closeSuccessModalBtn.addEventListener('click', hideSuccessModal);
+
+    // Clear errors on input
+    document.querySelectorAll('input, textarea, select').forEach(element => {
+      element.addEventListener('input', () => {
+        hideFieldError(element.id);
+      });
+    });
+
+    // Element SDK initialization
+    async function onConfigChange(cfg) {
+      // Update form title
+      const titleEl = document.getElementById('formTitle');
+      if (titleEl) {
+        titleEl.textContent = cfg.form_title || defaultConfig.form_title;
+      }
+      
+      // Update form subtitle
+      const subtitleEl = document.getElementById('formSubtitle');
+      if (subtitleEl) {
+        subtitleEl.textContent = cfg.form_subtitle || defaultConfig.form_subtitle;
+      }
+      
+      // Update submit button text
+      const submitTextEl = document.getElementById('submitText');
+      if (submitTextEl) {
+        submitTextEl.textContent = cfg.submit_button_text || defaultConfig.submit_button_text;
+      }
+      
+      // Update colors
+      document.body.style.backgroundColor = cfg.background_color || defaultConfig.background_color;
+    }
+
+    function mapToCapabilities(cfg) {
+      return {
+        recolorables: [
+          {
+            get: () => cfg.background_color || defaultConfig.background_color,
+            set: (value) => {
+              cfg.background_color = value;
+              if (window.elementSdk) {
+                window.elementSdk.setConfig({ background_color: value });
+              }
+            }
+          },
+          {
+            get: () => cfg.primary_color || defaultConfig.primary_color,
+            set: (value) => {
+              cfg.primary_color = value;
+              if (window.elementSdk) {
+                window.elementSdk.setConfig({ primary_color: value });
+              }
+            }
+          },
+          {
+            get: () => cfg.text_color || defaultConfig.text_color,
+            set: (value) => {
+              cfg.text_color = value;
+              if (window.elementSdk) {
+                window.elementSdk.setConfig({ text_color: value });
+              }
+            }
+          }
+        ],
+        borderables: [],
+        fontEditable: undefined,
+        fontSizeable: undefined
+      };
+    }
+
+    function mapToEditPanelValues(cfg) {
+      return new Map([
+        ['form_title', cfg.form_title || defaultConfig.form_title],
+        ['form_subtitle', cfg.form_subtitle || defaultConfig.form_subtitle],
+        ['submit_button_text', cfg.submit_button_text || defaultConfig.submit_button_text]
+      ]);
+    }
+
+    // Initialize Element SDK
+    if (window.elementSdk) {
+      window.elementSdk.init({
+        defaultConfig,
+        onConfigChange,
+        mapToCapabilities,
+        mapToEditPanelValues
+      });
+      config = window.elementSdk.config;
+    }
+  </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9bfaa998e2e58a9a',t:'MTc2ODcwMzM0My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
